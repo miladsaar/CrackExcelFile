@@ -1,11 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CrackExcelFile">
+      <HintPath>..\CrackExcelFile\bin\Debug\netcoreapp2.0\CrackExcelFile.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

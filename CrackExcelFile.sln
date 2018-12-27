@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrackExcelFile", "CrackExcelFile\CrackExcelFile.csproj", "{C28CBF63-1386-4185-86A9-D4CC9B2C1FB2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestExcelCrack", "TestExcelCrack\TestExcelCrack.csproj", "{72F86A89-EB66-49AE-85FD-967B8CEE382B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C28CBF63-1386-4185-86A9-D4CC9B2C1FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C28CBF63-1386-4185-86A9-D4CC9B2C1FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C28CBF63-1386-4185-86A9-D4CC9B2C1FB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72F86A89-EB66-49AE-85FD-967B8CEE382B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72F86A89-EB66-49AE-85FD-967B8CEE382B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72F86A89-EB66-49AE-85FD-967B8CEE382B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72F86A89-EB66-49AE-85FD-967B8CEE382B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
