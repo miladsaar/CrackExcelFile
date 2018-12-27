@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Threading;
 using CrackExcelFile;
 namespace TestExcelCrack
@@ -57,9 +58,39 @@ namespace TestExcelCrack
 
 
             //}
+
             RemoveExcelPass.OpenPass(@"d:\temp\mach.xlsx", CrackOption.RemovePassAndKeep);
             RemoveExcelPass.ReadSavedPasswords(@"d:\temp\mach_new.xlp");
+
+
+
+            //var s = Console.ReadLine();
+            //var sha = SHA512(s);
+            //Console.WriteLine(sha);
+
             Console.ReadKey();
+        }
+
+        private static string SHA512(string input)
+        {
+          
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(input);
+            using (var hash=System.Security.Cryptography.SHA512.Create())
+            {
+                var hashInputByte = hash.ComputeHash(bytes);
+                var hashInputStringBuilder = new System.Text.StringBuilder(128);
+                foreach (var b in hashInputByte)
+                {
+                    hashInputStringBuilder.Append(b.ToString("X2"));
+
+                }
+              
+                return hashInputStringBuilder.ToString( );
+            }
+
+          
+
         }
     }
 }

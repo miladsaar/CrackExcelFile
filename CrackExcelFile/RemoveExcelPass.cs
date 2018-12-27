@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Xml;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace CrackExcelFile
         private static string TempPath { get; set; }
         private static string WorkbookAddress { get; set; }
         private static string WorksheetAddress { get; set; }
-      
+
 
         private static CrackOption CrackOptionInfo { get; set; }
 
@@ -116,7 +117,7 @@ namespace CrackExcelFile
         /// Open workbook and remove password
         /// </summary>
         /// <returns></returns>
-        private static Task<bool> SearchWorkbook()
+        private static Task<bool> SearchWorkbook(string pass="", bool returnPass = false)
         {
             var bol = Task.Run(() =>
                 {
@@ -126,29 +127,48 @@ namespace CrackExcelFile
                     var tag = doc.GetElementsByTagName("workbookProtection").Item(0);
                     if (tag?.Attributes != null)
                     {
-                        if (CrackOptionInfo == CrackOption.RemovePassAndKeep)
+                        if (pass == string.Empty)
                         {
-                            var passValue = tag.Attributes.GetNamedItem("workbookHashValue").Value;
-                            var passType = tag.Attributes.GetNamedItem("workbookAlgorithmName").Value;
-
-                            var passwords = new Passwords
+                            if (CrackOptionInfo == CrackOption.RemovePassAndKeep)
                             {
-                                FileName = "",
-                                PassType = passType,
-                                PassValue = passValue,
-                                Target = new TargetInfo
+                                var passValue = tag.Attributes.GetNamedItem("workbookHashValue").Value;
+                                var passType = tag.Attributes.GetNamedItem("workbookAlgorithmName").Value;
+
+                                var passwords = new Passwords
                                 {
-                                    FileAddress = $"{FileName}_New.{FileExtension}",
-                                    TargetName = $"{FileName}",
-                                    TargetType = "Workbook",
-                                }
-                            };
-                            Password.Add(passwords);
-                            tag.Attributes.GetNamedItem("lockStructure").Value = "";
+                                    FileName = "",
+                                    PassType = passType,
+                                    PassValue = passValue,
+                                    Target = new TargetInfo
+                                    {
+                                        FileAddress = $"{FileName}_New.{FileExtension}",
+                                        TargetName = $"{FileName}",
+                                        TargetType = "Workbook",
+                                        CreateTime = DateTime.Now,
+                                        CrackOption = CrackOptionInfo,
+                                    }
+                                };
+                                Password.Add(passwords);
+                                tag.Attributes.GetNamedItem("lockStructure").Value = "";
+                            }
+                            else if (CrackOptionInfo == CrackOption.RemovePassComplite)
+                            {
+                                //tag.RemoveAll();
+                                tag.Attributes.GetNamedItem("lockStructure").Value = "";
+                                tag.Attributes.GetNamedItem("workbookHashValue").Value = "";
+                                tag.Attributes.GetNamedItem("workbookAlgorithmName").Value = "";
+                            }
+                            else if (returnPass)
+                            {
+                                tag.Attributes.GetNamedItem("lockStructure").Value = "1";
+                            }
                         }
-                        else if (CrackOptionInfo == CrackOption.RemovePassComplite)
+                        else
                         {
-                            tag.RemoveAll();
+                            
+                            tag.Attributes.GetNamedItem("lockStructure").Value = "1";
+                            tag.Attributes.GetNamedItem("workbookHashValue").Value = pass;
+                            tag.Attributes.GetNamedItem("workbookAlgorithmName").Value = "SHA-512";
                         }
                     }
 
@@ -166,7 +186,7 @@ namespace CrackExcelFile
         /// search all worksheets and remove password
         /// </summary>
         /// <returns></returns>
-        private static Task<bool> SearchWorksheets()
+        private static Task<bool> SearchWorksheets(string pass = "",bool returnPass=false)
         {
             var workSheets = Directory.GetFiles(WorksheetAddress);
             var bol = Task.Run(() =>
@@ -180,32 +200,49 @@ namespace CrackExcelFile
                     var tag = sheet.GetElementsByTagName("sheetProtection").Item(0);
                     if (tag?.Attributes != null)
                     {
-                        if (CrackOptionInfo == CrackOption.RemovePassAndKeep)
+                        if (pass == string.Empty)
                         {
-                            var passValue = tag.Attributes.GetNamedItem("hashValue").Value;
-                            var passType = tag.Attributes.GetNamedItem("algorithmName").Value;
-                            var fileName = string.Empty;
-                            FindFileName(file, ref fileName);
 
-                            var passwords = new Passwords
+                            if (CrackOptionInfo == CrackOption.RemovePassAndKeep)
                             {
-                                FileName = fileName,
-                                PassType = passType,
-                                PassValue = passValue,
-                                Target = new TargetInfo
-                                {
-                                    FileAddress = $"{FileName}_New.{FileExtension}",
-                                    TargetName = $"{FileName}",
-                                    TargetType = "Worksheet",
-                                }
-                            };
-                            Password.Add(passwords);
+                                var passValue = tag.Attributes.GetNamedItem("hashValue").Value;
+                                var passType = tag.Attributes.GetNamedItem("algorithmName").Value;
+                                var fileName = string.Empty;
+                                FindFileName(file, ref fileName);
 
-                            tag.Attributes.GetNamedItem("sheet").Value = "";
+                                var passwords = new Passwords
+                                {
+                                    FileName = fileName,
+                                    PassType = passType,
+                                    PassValue = passValue,
+                                    Target = new TargetInfo
+                                    {
+                                        FileAddress = $"{FileName}_New.{FileExtension}",
+                                        TargetName = $"{FileName}",
+                                        TargetType = "Worksheet",
+                                    }
+                                };
+                                Password.Add(passwords);
+
+                                tag.Attributes.GetNamedItem("sheet").Value = "";
+                            }
+                            else if (CrackOptionInfo == CrackOption.RemovePassComplite)
+                            {
+                                tag.Attributes.GetNamedItem("sheet").Value = "";
+                                tag.Attributes.GetNamedItem("hashValue").Value = "";
+                                tag.Attributes.GetNamedItem("algorithmName").Value = "";
+                                //tag.RemoveAll();
+                            }
+                            else if (returnPass)
+                            {
+                                tag.Attributes.GetNamedItem("sheet").Value = "1";
+                            }
                         }
-                        else if (CrackOptionInfo == CrackOption.RemovePassComplite)
+                        else
                         {
-                            tag.RemoveAll();
+                            tag.Attributes.GetNamedItem("sheet").Value = "1";
+                            tag.Attributes.GetNamedItem("hashValue").Value = pass;
+                            tag.Attributes.GetNamedItem("algorithmName").Value = "SHA-512";
                         }
                     }
 
@@ -258,18 +295,18 @@ namespace CrackExcelFile
         {
             //Task.Run(() =>
             //{
-                try
-                {
+            try
+            {
                 var newFilePath = $"{FileLocation}{FileName}_New.xlp";
                 var newFilePath2 = $"{TempPath}\\{FileName}.xlp";
-                    File.WriteAllText(newFilePath, JsonConvert.SerializeObject(Password));
-                    File.WriteAllText(newFilePath2, JsonConvert.SerializeObject(Password));
+                File.WriteAllText(newFilePath, JsonConvert.SerializeObject(Password));
+                File.WriteAllText(newFilePath2, JsonConvert.SerializeObject(Password));
                 Console.WriteLine($"Password removed and new file is {FileName}_New.{FileExtension}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
             //});
 
@@ -291,8 +328,10 @@ namespace CrackExcelFile
             var password = JsonConvert.DeserializeObject<List<Passwords>>(File.ReadAllText(path)).ToList();
             foreach (var item in password)
             {
-                var ta= item.Target.FileAddress !=string.Empty ? $"address={item.Target.FileAddress}":string.Empty;
-                var t1 = $"<{item.Target.TargetType} name={item.Target.TargetName} {ta}>\n";
+                var ta = item.Target.FileAddress != string.Empty ? $"address={item.Target.FileAddress}" : string.Empty;
+                var ct = item.Target.CreateTime != null ? $"create time={item.Target.CreateTime}" : string.Empty;
+                var co = item.Target.TargetType == "workbook" ? item.Target.CrackOption.ToString() : string.Empty;
+                var t1 = $"<{item.Target.TargetType} name={item.Target.TargetName} {ta} {ct} {co}>\n";
                 var t2 = $"     <file name> {item.FileName} </file name>\n";
                 var t3 = $"     <password type> {item.PassType} </password type>\n";
                 var t4 = $"     <password value> {item.PassValue} </password value>\n";
@@ -307,15 +346,81 @@ namespace CrackExcelFile
         /// 
         /// </summary>
         /// <param name="path"></param>
-        public static void ReturnPassword(string path)
+        public static async void ReturnPassword(string path)
         {
             //Todo:return password method
+            CheckAndSetPath(path);
+
+            //open work book and remove pass
+            var b1 = await SearchWorkbook(returnPass:true);
+
+            //open work sheets and remove pass
+            var b2 = await SearchWorksheets(returnPass:true);
+
+            //make excel file and clean path
+            while (true)
+            {
+                if (b1 && b2)
+                {
+                    CleanPath();
+                    break;
+                }
+            }
+
         }
 
 
-        public static void SetNewPassword(string path, string newPass, string check)
+        public static async void SetNewPassword(string path, string workbookPass,
+            string workbookConfirmPassword, string workSheetPass, string worksheetConfirmPassword)
         {
-            //todo:set new pasword method
+
+            if (!workbookPass.Equals(workbookConfirmPassword))
+            {
+                Console.WriteLine("Workbook password is difrent whith confirm password");
+                return;
+            }
+
+            if (!workSheetPass.Equals(worksheetConfirmPassword))
+            {
+                Console.WriteLine("Worksheet password is difrent whith confirm password");
+                return;
+            }
+
+            if (workbookPass==string.Empty )
+            {
+                Console.WriteLine("Workbook password can't be empty");
+                return;
+            }
+
+            if (workSheetPass==string.Empty )
+            {
+                Console.WriteLine("Worksheet password can't be empty");
+                return;
+            }
+
+            CheckAndSetPath(path);
+
+            //todo:make hash password
+            var shaWorksheetPass = SHA512.Create(workSheetPass);
+            var shaWorkbookPass = SHA512.Create(workbookPass);
+
+            //open work book and remove pass
+            var b1 = await SearchWorkbook(pass:shaWorkbookPass.Hash.ToString());
+
+            //open work sheets and remove pass
+            var b2 = await SearchWorksheets(pass:shaWorksheetPass.Hash.ToString());
+
+            //make excel file and clean path
+            while (true)
+            {
+                if (b1 && b2)
+                {
+                    CleanPath();
+                    break;
+                }
+            }
+           
+
         }
 
         /// <summary>

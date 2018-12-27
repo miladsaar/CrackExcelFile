@@ -12,5 +12,8 @@ namespace CrackExcelFile
 
         public string TargetType { get; set; }
 
+        public DateTime? CreateTime { get; set; }
+
+        public CrackOption CrackOption { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace CrackExcelFile
         public string FileName { get; set; }
         public string PassValue { get; set; }
         public string PassType { get; set; }
+       
     }
 }
