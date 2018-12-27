@@ -33,7 +33,7 @@ namespace CrackExcelFile
         private static string TempPath { get; set; }
         private static string WorkbookAddress { get; set; }
         private static string WorksheetAddress { get; set; }
-        private static string PassValue { get; set; }
+      
 
         private static CrackOption CrackOptionInfo { get; set; }
 
@@ -136,7 +136,12 @@ namespace CrackExcelFile
                                 FileName = "",
                                 PassType = passType,
                                 PassValue = passValue,
-                                Target = "Workbook"
+                                Target = new TargetInfo
+                                {
+                                    FileAddress = $"{FileName}_New.{FileExtension}",
+                                    TargetName = $"{FileName}",
+                                    TargetType = "Workbook",
+                                }
                             };
                             Password.Add(passwords);
                             tag.Attributes.GetNamedItem("lockStructure").Value = "";
@@ -187,7 +192,12 @@ namespace CrackExcelFile
                                 FileName = fileName,
                                 PassType = passType,
                                 PassValue = passValue,
-                                Target = "Worksheet"
+                                Target = new TargetInfo
+                                {
+                                    FileAddress = $"{FileName}_New.{FileExtension}",
+                                    TargetName = $"{FileName}",
+                                    TargetType = "Worksheet",
+                                }
                             };
                             Password.Add(passwords);
 
@@ -223,7 +233,7 @@ namespace CrackExcelFile
                 {
                     Console.WriteLine(e.Message);
                 }
-               
+
             });
 
         }
@@ -274,7 +284,8 @@ namespace CrackExcelFile
             var password = JsonConvert.DeserializeObject<List<Passwords>>(File.ReadAllText(path)).ToList();
             foreach (var item in password)
             {
-                var t1 = $"<{item.Target}>\n";
+                var ta= item.Target.FileAddress !=string.Empty ? $"address={item.Target.FileAddress}":string.Empty;
+                var t1 = $"<{item.Target.TargetType} name={item.Target.TargetName} {ta}>\n";
                 var t2 = $"     <file name> {item.FileName} </file name>\n";
                 var t3 = $"     <password type> {item.PassType} </password type>\n";
                 var t4 = $"     <password value> {item.PassValue} </password value>\n";
@@ -313,8 +324,6 @@ namespace CrackExcelFile
             var name = path.Substring(chr + 1, path.Length - chr - 1);
             var dot = name.LastIndexOf(".", StringComparison.Ordinal);
             fileName = name.Substring(0, dot);
-
-
 
         }
 

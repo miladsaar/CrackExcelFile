@@ -55,7 +55,8 @@ namespace TestExcelCrack
 
 
             }
-
+            //RemoveExcelPass.OpenPass(@"d:\temp\mach.xlsx", CrackOption.RemovePassAndKeep);
+            //RemoveExcelPass.ReadSavedPasswords(@"d:\temp\mach_new.xlp");
             Console.ReadKey();
         }
     }
