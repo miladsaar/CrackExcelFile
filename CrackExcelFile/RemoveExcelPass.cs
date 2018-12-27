@@ -219,24 +219,7 @@ namespace CrackExcelFile
             return bol;
         }
 
-        private static void WritePassFile()
-        {
-            Task.Run(() =>
-            {
-                try
-                {
-                    var newFilePath = $"{FileLocation}{FileName}_New.xlp";
-                    File.WriteAllText(newFilePath, JsonConvert.SerializeObject(Password));
-                    Console.WriteLine($"Password removed and new file is {FileName}_New.{FileExtension}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
 
-            });
-
-        }
         /// <summary>
         /// make new excel file and clean path
         /// </summary>
@@ -268,6 +251,30 @@ namespace CrackExcelFile
             //Console.WriteLine($"Password removed and new file is {FileName}_New.{FileExtension}");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private static void WritePassFile()
+        {
+            //Task.Run(() =>
+            //{
+                try
+                {
+                var newFilePath = $"{FileLocation}{FileName}_New.xlp";
+                var newFilePath2 = $"{TempPath}\\{FileName}.xlp";
+                    File.WriteAllText(newFilePath, JsonConvert.SerializeObject(Password));
+                    File.WriteAllText(newFilePath2, JsonConvert.SerializeObject(Password));
+                Console.WriteLine($"Password removed and new file is {FileName}_New.{FileExtension}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+
+            //});
+
+        }
+
 
         /// <summary>
         /// 
@@ -289,7 +296,7 @@ namespace CrackExcelFile
                 var t2 = $"     <file name> {item.FileName} </file name>\n";
                 var t3 = $"     <password type> {item.PassType} </password type>\n";
                 var t4 = $"     <password value> {item.PassValue} </password value>\n";
-                var t5 = $"</{item.Target}>\n";
+                var t5 = $"</{item.Target.TargetType}>\n";
                 Console.WriteLine(t1 + t2 + t3 + t4 + t5);
             }
 
