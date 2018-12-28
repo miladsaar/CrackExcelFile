@@ -309,7 +309,7 @@ namespace CrackExcelFile
         {
             var txt = Task.Run(() =>
               {
-                  while (Buisy == true)
+                  while (Buisy)
                   {
 
                   }
@@ -356,6 +356,7 @@ namespace CrackExcelFile
                   return str;
 
               });
+            FileText = txt.Result;
             return txt.Result;
         }
 
