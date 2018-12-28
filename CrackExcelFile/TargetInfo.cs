@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CrackExcelFile
 {
-    class TargetInfo
+    internal class TargetInfo
     {
         public string TargetName { get; set; }
 

@@ -54,7 +54,7 @@ namespace CrackExcelFile
 
         #endregion
 
-        #region Manage events
+        #region Message events
 
         /// <summary>
         /// Change messages
@@ -220,6 +220,14 @@ namespace CrackExcelFile
 
         }
 
+        /// <summary>
+        /// Set new password to workbook and worksheets
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="workbookPass"></param>
+        /// <param name="workbookConfirmPassword"></param>
+        /// <param name="workSheetPass"></param>
+        /// <param name="worksheetConfirmPassword"></param>
         public static async void SetNewPassword(string path, string workbookPass,
             string workbookConfirmPassword, string workSheetPass, string worksheetConfirmPassword)
         {

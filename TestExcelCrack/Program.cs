@@ -62,30 +62,7 @@ namespace TestExcelCrack
 
 
 
-            Thread thr = new Thread(() =>
-            {
-                RemoveExcelPass.OpenPass(@"d:\temp\mach.xlsx", CrackOption.RemovePassAndKeep);
-            });
-
-            Thread thr2 = new Thread(() =>
-              {
-                  Console.WriteLine(RemoveExcelPass.Message);
-
-              });
-            thr2.Priority = ThreadPriority.Highest;
-            thr.Priority = ThreadPriority.BelowNormal;
-            thr.Start();
-            thr2.Start();
-            while (true)
-            {
-                if (thr.ThreadState == ThreadState.Stopped)
-                {
-                    ;
-                    break;
-                }
-            }
-
-
+           
 
             ////RemoveExcelPass.ShowMessagesAsync(() =>
             ////{
